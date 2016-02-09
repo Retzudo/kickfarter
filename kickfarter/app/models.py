@@ -46,12 +46,12 @@ class User(AbstractBaseUser):
             raise BackingException('You can\'t back your own projects')
         if project.status != 0:
             raise BackingException('You can only back active projects')
-        if project not in self.pledged_to.all():
-            pledge = Pledge(project=project, user=self, amount=amount, reward=reward)
-            pledge.save()
-            return pledge
-        else:
+        if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
+
+        pledge = Pledge(project=project, user=self, amount=amount, reward=reward)
+        pledge.save()
+        return pledge
 
 
 class Project(models.Model):
@@ -59,6 +59,7 @@ class Project(models.Model):
     goal = models.FloatField()
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_created=True)
     status = models.IntegerField(choices=PROJECT_STATUS, default=PROJECT_STATUS[0])
     cover_image = models.ImageField()
 
@@ -71,6 +72,7 @@ class Pledge(models.Model):
 
 
 class Reward(models.Model):
+    project = models.ForeignKey('Project', related_name='reward_tiers', on_delete=models.CASCADE)
     description = models.TextField()
     minimum_amount = models.FloatField()
 
