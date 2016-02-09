@@ -1,0 +1,31 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block styles %}
+        <link rel="stylesheet" href="{% static 'app/css/bootstrap.min.css' %}">
+    {% endblock %}
+    <title>{% block title %}Kickfarter{% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'index' %}">Kickfarter</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'login' %}">Log in</a></li>
+                    <li><a href="{% url 'signup' %}"><strong>Sign up</strong></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% block content %}
+    {% endblock %}
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>
