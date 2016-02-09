@@ -13,9 +13,15 @@
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container-fluid">
             <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
                 <a class="navbar-brand" href="{% url 'index' %}">Kickfarter</a>
             </div>
-            <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse" id="nav-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="{% url 'login' %}">Log in</a></li>
                     <li><a href="{% url 'signup' %}"><strong>Sign up</strong></a></li>
@@ -26,6 +32,8 @@
     {% block content %}
     {% endblock %}
     {% block scripts %}
+        <script src="{% static 'app/js/jquery-2.2.0.min.js' %}"></script>
+        <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
     {% endblock %}
 </body>
 </html>

@@ -60,6 +60,7 @@ class Project(models.Model):
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
     status = models.IntegerField(choices=PROJECT_STATUS, default=PROJECT_STATUS[0])
+    cover_image = models.ImageField()
 
 
 class Pledge(models.Model):
