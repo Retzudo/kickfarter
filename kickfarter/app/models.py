@@ -42,14 +42,14 @@ class User(AbstractBaseUser):
         return self.name
 
     def pledge(self, amount, project, reward=None):
-        if project.creator == self:
+        if project.created_by == self:
             raise BackingException('You can\'t back your own projects')
         if project.status != 0:
             raise BackingException('You can only back active projects')
         if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
 
-        pledge = Pledge(project=project, user=self, amount=amount, reward=reward)
+        pledge = Pledge(project=project, user=self, amount=amount, chosen_reward=reward)
         pledge.save()
         return pledge
 
@@ -57,32 +57,35 @@ class User(AbstractBaseUser):
 class Project(models.Model):
     description = models.TextField()
     goal = models.FloatField()
-    pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
-    created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_created=True)
-    status = models.IntegerField(choices=PROJECT_STATUS, default=PROJECT_STATUS[0])
     cover_image = models.ImageField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    status = models.IntegerField(choices=PROJECT_STATUS, default=0)
+    created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
+    pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
+
+    def total_pledged_amount(self):
+        return sum([pledge.amount for pledge in self.pledge_set.all()])
 
 
 class Pledge(models.Model):
+    amount = models.FloatField()
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
     user = models.ForeignKey('User', related_name='pledges', on_delete=models.CASCADE)
-    amount = models.FloatField()
     chosen_reward = models.ForeignKey('Reward', related_name='pledges', on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Reward(models.Model):
-    project = models.ForeignKey('Project', related_name='reward_tiers', on_delete=models.CASCADE)
     description = models.TextField()
     minimum_amount = models.FloatField()
+    project = models.ForeignKey('Project', related_name='reward_tiers', on_delete=models.CASCADE)
 
 
 class Comment(models.Model):
+    text = models.TextField()
     project = models.ForeignKey('Project', related_name='comments', on_delete=models.CASCADE)
     user = models.ForeignKey('User', related_name='comments')
-    text = models.TextField()
 
 
 class Update(models.Model):
-    project = models.ForeignKey('Project', related_name='updates', on_delete=models.CASCADE)
     text = models.TextField()
+    project = models.ForeignKey('Project', related_name='updates', on_delete=models.CASCADE)
