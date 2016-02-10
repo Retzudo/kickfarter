@@ -16,6 +16,7 @@
 }
 
 .project-card__cover-image {
+    display: block;
     background-position: center center;
     background-size: cover;
     width: 100%;
@@ -32,6 +33,15 @@
     font-size: 100%;
     font-weight: bold;
     margin-bottom: .25em;
+    color: black;
+}
+
+.project-card__title:link,
+.project-card__title:hover,
+.project-card__title:active,
+.project-card__title:focus {
+    text-decoration: none;
+    color: black;
 }
 
 .project-card__created-by {

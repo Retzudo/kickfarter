@@ -1,6 +1,8 @@
-env/
-static
+/env/
+/static/
+/.idea
+
+*.sqlite3
+
 *.pyc
 __pycache__
-*.sqlite3
-.idea

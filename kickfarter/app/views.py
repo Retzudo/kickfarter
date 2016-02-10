@@ -3,7 +3,7 @@ from app.models import Project
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 def index(request):
@@ -77,6 +77,11 @@ def start_project(request):
         form = ProjectForm()
 
     return render(request, 'app/start_project.html', context={'form': form})
+
+
+def project_view(request, id):
+    project = get_object_or_404(Project, pk=id)
+    return render(request, 'app/project_view.html', context={'project': project})
 
 
 def error(request):
