@@ -7,7 +7,7 @@
         <h4>Your projects:</h4>
         <div class="row">
             {% for project in projects_created %}
-                {% include 'app/snippets/project-card.html' with project=project %}
+                {% include 'app/snippets/project_card.html' with project=project %}
             {% endfor %}
         </div>
 
@@ -15,7 +15,7 @@
         <ul>
             <div class="row">
                 {% for pledge in pledges %}
-                    {% include 'app/snippets/project-card.html' with project=pledge.project %}
+                    {% include 'app/snippets/project_card.html' with project=pledge.project %}
                 {% endfor %}
             </div>
         </ul>

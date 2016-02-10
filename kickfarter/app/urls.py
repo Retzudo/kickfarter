@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^profile$', app.views.profile, name='profile'),
     url(r'^start$', app.views.start_project, name='start_project'),
     url(r'^discover$', app.views.discover, name='discover'),
-    url(r'^project/(?P<id>\d+)$', app.views.project_view, name='project_view'),
+    url(r'^project/(?P<id>\d+)/edit$', app.views.edit_project, name='edit_project'),
+    url(r'^project/(?P<id>\d+)$', app.views.view_project, name='view_project'),
 ]

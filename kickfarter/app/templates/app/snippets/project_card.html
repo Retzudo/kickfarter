@@ -3,12 +3,12 @@
     <div class="project-card">
         <div class="project-card__thumbnail">
             {% if project.cover_image %}
-                <a href="{% url 'project_view' project.id %}" class="project-card__cover-image" style="background-image: url('{{ project.cover_image.url }}')"></a>
+                <a href="{% url 'view_project' project.id %}" class="project-card__cover-image" style="background-image: url('{{ project.cover_image.url }}')"></a>
             {% endif %}
         </div>
 
         <div class="project-card__content">
-            <a class="project-card__title" href="{% url 'project_view' project.id %}">{{ project.title }}</a>
+            <a class="project-card__title" href="{% url 'view_project' project.id %}">{{ project.title }}</a>
             <p class="project-card__created-by">{{ project.created_by }}</p>
             <p class="project-card__blurb">{{ project.description }}</p>
         </div>
@@ -31,7 +31,7 @@
                     <span class="project-card__stats-label">pledged</span>
                 </li>
                 <li>
-                    <div class="project-card__stats-value">x</div>
+                    <div class="project-card__stats-value">TBI</div>
                     <span class="project-card__stats-label">days to go</span>
                 </li>
             </ul>

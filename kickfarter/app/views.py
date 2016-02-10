@@ -3,7 +3,7 @@ from app.models import Project
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 
 
@@ -72,14 +72,14 @@ def start_project(request):
         if form.is_valid():
             form.instance.created_by = request.user
             form.save()
-            return redirect(reverse('project_view', args=[form.instance.id]))
+            return redirect(reverse('view_project', args=[form.instance.id]))
     else:
         form = ProjectForm()
 
     return render(request, 'app/start_project.html', context={'form': form})
 
 
-def project_view(request, id):
+def view_project(request, id):
     """ if
     1. This project is a draft and
     2. a user is logged in and
@@ -91,11 +91,37 @@ def project_view(request, id):
 
     if project.is_draft:
         if request.user.is_authenticated() and (request.user == project.created_by or request.user.is_superuser):
-            return render(request, 'app/project_view.html', context={'project': project})
+            return render(request, 'app/view_project.html', context={
+                'project': project,
+                'reward_tiers': project.reward_tiers.all(),
+            })
         else:
-            raise Http404()
+            return HttpResponseNotFound()
     else:
-        return render(request, 'app/project_view.html', context={'project': project})
+        return render(request, 'app/view_project.html', context={
+            'project': project,
+            'reward_tiers': project.reward_tiers.all(),
+        })
+
+
+@login_required
+def edit_project(request, id):
+    project = get_object_or_404(Project, pk=id)
+
+    if request.user == project.created_by or request.user.is_superuser:
+        if request.method == 'POST':
+            form = ProjectForm(request.POST, instance=project)
+            if form.is_valid():
+                publish = request.POST.get('publish', None)
+                if project.status != 0 and publish == '1':
+                    form.instance.status = 0
+                form.save()
+        else:
+            form = ProjectForm(instance=project)
+
+        return render(request, 'app/edit_project.html', context={'form': form})
+    else:
+        return HttpResponseForbidden()
 
 
 def error(request):

@@ -1,0 +1,37 @@
+{% extends 'app/master.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>Edit "{{ form.instance.title }}"</h1>
+
+        <form action="{% url 'edit_project' form.instance.id %}" method="post" enctype="multipart/form-data" id="project-form">
+            {% include 'app/snippets/project_form.html' with form=form %}
+
+            <input type="hidden" name="publish" value="0" id="publish-input">
+
+            {% csrf_token %}
+
+            <button type="submit" class="btn btn-default">Save changes</button>
+
+            {% if form.instance.status == 4 %}
+                <button type="submit" class="btn btn-danger" id="publish-button">Publish</button>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        (function () {
+            var $publishButton = document.getElementById('publish-button');
+            var $form = document.getElementById('project-form');
+            var $publishInput = document.getElementById('publish-input');
+
+            $publishButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                $publishInput.value = 1;
+                $form.submit();
+            });
+        })();
+    </script>
+{% endblock %}
