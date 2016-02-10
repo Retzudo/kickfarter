@@ -1,0 +1,40 @@
+{% load l10n %}
+<div class="col-md-4 project-col">
+    <div class="project-card">
+        <div class="project-card__thumbnail">
+            {% if project.cover_image %}
+                <div class="project-card__cover-image" style="background-image: url('{{ project.cover_image.url }}')"></div>
+            {% endif %}
+        </div>
+
+        <div class="project-card__content">
+            <h6 class="project-card__title">{{ project.title }}</h6>
+            <p class="project-card__created-by">{{ project.created_by }}</p>
+            <p class="project-card__blurb">{{ project.description }}</p>
+        </div>
+
+        <div class="project-card__footer">
+            <div class="project-card__location">
+                Location TBI
+            </div>
+            <div class="project-card__progress-bar">
+                <div class="project-card__progress" style="width: {{ project.percentage_funded|floatformat:"2" }}%;"></div>
+            </div>
+
+            <ul class="project-card__stats">
+                <li>
+                    <div class="project-card__stats-value">{{ project.percentage_funded|floatformat:"0" }}%</div>
+                    <span class="project-card__stats-label">funded</span>
+                </li>
+                <li>
+                    <div class="project-card__stats-value">${% localize on %}{{ project.total_pledged_amount|floatformat:"2" }}{% endlocalize %}</div>
+                    <span class="project-card__stats-label">pledged</span>
+                </li>
+                <li>
+                    <div class="project-card__stats-value">x</div>
+                    <span class="project-card__stats-label">days to go</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

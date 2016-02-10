@@ -1,0 +1,13 @@
+{% extends 'app/master.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>Discover shitty projects</h1>
+
+        <div class="row">
+            {% for project in projects %}
+                {% include 'app/snippets/project-card.html' with project=project %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from app.models import User
+from app.models import User, Project
 
 
 class UserCreationForm(forms.ModelForm):
@@ -48,3 +48,9 @@ class UserCreationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        exclude = ['status', 'created_on', 'created_by', 'pledges']

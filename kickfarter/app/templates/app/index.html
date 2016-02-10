@@ -7,5 +7,11 @@
             <p>Discover the world of shitty crowd-funded projects.</p>
             <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Sign up</a> or <a href="{% url 'login' %}">log in</a>
         </div>
+
+        <div class="row">
+            {% for project in projects %}
+                {% include 'app/snippets/project-card.html' with project=project %}
+            {% endfor %}
+        </div>
     </main>
 {% endblock %}

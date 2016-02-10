@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block styles %}
         <link rel="stylesheet" href="{% static 'app/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'app/css/main.css' %}">
     {% endblock %}
     <title>{% block title %}Kickfarter{% endblock %}</title>
 </head>
@@ -22,6 +23,10 @@
                 <a class="navbar-brand" href="{% url 'index' %}">Kickfarter</a>
             </div>
             <div class="collapse navbar-collapse" id="nav-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{% url 'discover' %}">Discover</a></li>
+                        <li><a href="{% url 'start_project' %}">Start a project</a></li>
+                    </ul>
                     {% if not user.is_authenticated %}
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="{% url 'login' %}">Log in</a></li>

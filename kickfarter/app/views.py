@@ -1,11 +1,19 @@
-from app.forms import UserCreationForm, LoginForm
+from app.forms import UserCreationForm, LoginForm, ProjectForm
+from app.models import Project
 from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 
 
 def index(request):
-    return render(request, 'app/index.html')
+    projects = Project.objects.filter(status=0)
+    return render(request, 'app/index.html', context={'projects': projects})
+
+
+def discover(request):
+    projects = Project.objects.filter(status=0)
+    return render(request, 'app/discover.html', context={'projects': projects})
 
 
 def signup(request):
@@ -48,3 +56,17 @@ def logout_view(request):
 
 def profile(request):
     return render(request, 'app/profile.html')
+
+
+@login_required
+def start_project(request):
+    if request.method == 'POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            form.instance.created_by = request.user
+            form.save()
+            # return redirect(reverse('view_project', id=project.id))
+    else:
+        form = ProjectForm()
+
+    return render(request, 'app/start_project.html', context={'form': form})

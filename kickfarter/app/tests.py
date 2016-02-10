@@ -35,26 +35,27 @@ class User(TestCase):
         from app.exceptions import BackingException
         with self.assertRaises(BackingException) as e:
             # Pledging to their own project
-            self.user.pledge(10, self.project)
+            self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'own projects')
 
         self.project.status = 3
 
         with self.assertRaises(BackingException) as e:
             # Pledging on a project that is not active
-            self.user.pledge(10, self.project)
+            self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'active projects')
 
         self.project.status = 0
 
-        pledge = self.user_two.pledge(10, self.project)
-        self.assertEqual(10, pledge.amount)
+        pledge = self.user_two.pledge(100, self.project)
+        self.assertEqual(100, pledge.amount)
         self.assertEqual(self.project, pledge.project)
         self.assertEqual(self.user_two, pledge.user)
 
-        self.assertEqual(10, self.project.total_pledged_amount())
+        self.assertEqual(100, self.project.total_pledged_amount)
+        self.assertEqual(1, self.project.percentage_funded)
 
         with self.assertRaises(BackingException) as e:
             # Pleding again
-            self.user.pledge(10, self.project)
+            self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'already backed')

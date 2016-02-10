@@ -1,6 +1,7 @@
 from app.exceptions import BackingException
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.core.validators import MinValueValidator
 from django.db import models
 
 PROJECT_STATUS = [
@@ -62,21 +63,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         return pledge
 
     def __str__(self):
-        return self.email
+        return self.name if self.name else self.email
 
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    goal = models.FloatField()
-    cover_image = models.ImageField()
+    goal = models.FloatField(validators=[MinValueValidator(1)])
+    cover_image = models.ImageField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=PROJECT_STATUS, default=0)
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
 
+    @property
     def total_pledged_amount(self):
         return sum([pledge.amount for pledge in self.pledge_set.all()])
+
+    @property
+    def percentage_funded(self):
+        return (self.total_pledged_amount / self.goal) * 100
 
     def __str__(self):
         return self.title
