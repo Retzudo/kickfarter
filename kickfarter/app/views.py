@@ -54,8 +54,14 @@ def logout_view(request):
     return redirect(reverse('index'))
 
 
+@login_required
 def profile(request):
-    return render(request, 'app/profile.html')
+    projects_created = request.user.projects_created.all()
+    pledges = request.user.pledges.all()
+    return render(request, 'app/profile.html', context={
+        'projects_created': projects_created,
+        'pledges': pledges,
+    })
 
 
 @login_required
@@ -66,6 +72,7 @@ def start_project(request):
             form.instance.created_by = request.user
             form.save()
             # return redirect(reverse('view_project', id=project.id))
+            return redirect(reverse('discover'))
     else:
         form = ProjectForm()
 

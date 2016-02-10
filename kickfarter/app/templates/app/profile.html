@@ -4,6 +4,20 @@
     <div class="container">
         <h1>Profile</h1>
 
-        You are logged in as {{ user.email }}.
+        <h4>Your projects:</h4>
+        <div class="row">
+            {% for project in projects_created %}
+                {% include 'app/snippets/project-card.html' with project=project %}
+            {% endfor %}
+        </div>
+
+        <h4>Your pledges:</h4>
+        <ul>
+            <div class="row">
+                {% for pledge in pledges %}
+                    {% include 'app/snippets/project-card.html' with project=pledge.project %}
+                {% endfor %}
+            </div>
+        </ul>
     </div>
 {% endblock %}

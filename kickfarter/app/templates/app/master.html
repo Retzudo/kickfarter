@@ -34,7 +34,7 @@
                         </ul>
                     {% else %}
                         <ul class="nav navbar-nav navbar-right">
-                            <li><span class="navbar-text">{{user.email }}</span></li>
+                            <li><a href="{% url 'profile' %}">{{user.email }}</a></li>
                             <li><a href="{% url 'logout' %}">(logout)</a></li>
                         </ul>
                     {% endif %}
