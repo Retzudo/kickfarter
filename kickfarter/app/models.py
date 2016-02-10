@@ -85,6 +85,10 @@ class Project(models.Model):
     def percentage_funded(self):
         return (self.total_pledged_amount / self.goal) * 100
 
+    @property
+    def is_draft(self):
+        return self.status == 4
+
     def publish(self):
         self.status = 0
 

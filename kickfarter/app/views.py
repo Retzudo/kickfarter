@@ -3,6 +3,7 @@ from app.models import Project
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
 
@@ -71,8 +72,7 @@ def start_project(request):
         if form.is_valid():
             form.instance.created_by = request.user
             form.save()
-            # return redirect(reverse('view_project', id=project.id))
-            return redirect(reverse('discover'))
+            return redirect(reverse('project_view', args=[form.instance.id]))
     else:
         form = ProjectForm()
 
@@ -80,8 +80,22 @@ def start_project(request):
 
 
 def project_view(request, id):
+    """ if
+    1. This project is a draft and
+    2. a user is logged in and
+    3. the project's owner is the logged in user (or a superuser)
+    4. then display the project
+    5. else 404
+    """
     project = get_object_or_404(Project, pk=id)
-    return render(request, 'app/project_view.html', context={'project': project})
+
+    if project.is_draft:
+        if request.user.is_authenticated() and (request.user == project.created_by or request.user.is_superuser):
+            return render(request, 'app/project_view.html', context={'project': project})
+        else:
+            raise Http404()
+    else:
+        return render(request, 'app/project_view.html', context={'project': project})
 
 
 def error(request):
