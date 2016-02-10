@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """Basic user because we don't want Django's."""
+    """Basic user because we don't want Django's user class."""
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     objects = UserManager()
@@ -57,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
 
-        pledge = Pledge(project=project, user=self, amount=amount, chosen_reward=reward)
+        pledge = Pledge(project=project, user=self, amount=amount, chosen_reward_tier=reward)
         pledge.save()
         return pledge
 
@@ -98,7 +98,7 @@ class RewardTier(models.Model):
 class Comment(models.Model):
     text = models.TextField()
     project = models.ForeignKey('Project', related_name='comments', on_delete=models.CASCADE)
-    user = models.ForeignKey('User', related_name='comments')
+    user = models.ForeignKey('User', related_name='comments')  # Don't delete comments on user deletion
 
 
 class Update(models.Model):

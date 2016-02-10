@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^login$', app.views.login_view, name='login'),
     url(r'^logout', app.views.logout_view, name='logout'),
     url(r'^signup$', app.views.signup, name='signup'),
+    url(r'^profile$', app.views.profile, name='profile'),
 ]

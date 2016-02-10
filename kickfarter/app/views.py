@@ -1,4 +1,4 @@
-from app.forms import UserCreationForm
+from app.forms import UserCreationForm, LoginForm
 from django.contrib.auth import authenticate, logout, login
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
@@ -26,10 +26,25 @@ def signup(request):
 
 def login_view(request):
     if request.user.is_authenticated():
-        return redirect(reverse('index'))
-    return render(request, 'app/login.html')
+        return redirect(reverse('profile'))
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(email=form.cleaned_data['email'], password=form.cleaned_data['password'])
+            if user:
+                login(request, user)
+                return redirect(reverse('index'))
+    else:
+        form = LoginForm()
+
+    return render(request, 'app/login.html', context={'form': form})
 
 
 def logout_view(request):
     logout(request)
     return redirect(reverse('index'))
+
+
+def profile(request):
+    return render(request, 'app/profile.html')
