@@ -6,7 +6,7 @@ from django.test import TestCase
 import os
 
 
-class User(TestCase):
+class Tests(TestCase):
     def setUp(self):
         from app.models import User
         from django.core.files.uploadedfile import SimpleUploadedFile
@@ -33,19 +33,18 @@ class User(TestCase):
 
     def test_pleding(self):
         from app.exceptions import BackingException
-        with self.assertRaises(BackingException) as e:
-            # Pledging to their own project
-            self.user.pledge(100, self.project)
-            self.assertContains(e.msg, 'own projects')
-
-        self.project.status = 3
 
         with self.assertRaises(BackingException) as e:
             # Pledging on a project that is not active
             self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'active projects')
 
-        self.project.status = 0
+        self.project.publish()
+
+        with self.assertRaises(BackingException) as e:
+            # Pledging to their own project
+            self.user.pledge(100, self.project)
+            self.assertContains(e.msg, 'own projects')
 
         pledge = self.user_two.pledge(100, self.project)
         self.assertEqual(100, pledge.amount)

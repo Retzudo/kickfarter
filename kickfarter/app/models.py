@@ -9,6 +9,7 @@ PROJECT_STATUS = [
     (1, 'SUCCESSFUL'),
     (2, 'NOT_FUNDED'),
     (3, 'CANCELED'),
+    (4, 'DRAFT'),
 ]
 
 
@@ -72,7 +73,7 @@ class Project(models.Model):
     goal = models.FloatField(validators=[MinValueValidator(1)])
     cover_image = models.ImageField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(choices=PROJECT_STATUS, default=0)
+    status = models.IntegerField(choices=PROJECT_STATUS, default=4)
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
 
@@ -83,6 +84,9 @@ class Project(models.Model):
     @property
     def percentage_funded(self):
         return (self.total_pledged_amount / self.goal) * 100
+
+    def publish(self):
+        self.status = 0
 
     def __str__(self):
         return self.title
