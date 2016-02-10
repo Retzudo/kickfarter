@@ -2,8 +2,8 @@ from app.forms import UserCreationForm, LoginForm, ProjectForm
 from app.models import Project
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 
 
@@ -96,7 +96,7 @@ def view_project(request, id):
                 'reward_tiers': project.reward_tiers.all(),
             })
         else:
-            return HttpResponseNotFound()
+            raise PermissionDenied()
     else:
         return render(request, 'app/view_project.html', context={
             'project': project,
@@ -121,7 +121,7 @@ def edit_project(request, id):
 
         return render(request, 'app/edit_project.html', context={'form': form})
     else:
-        return HttpResponseForbidden()
+        raise PermissionDenied()
 
 
 def error(request):
