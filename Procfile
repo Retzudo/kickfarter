@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath kickfarter kickfarter.wsgi --log-file -
+web: gunicorn kickfarter.wsgi --log-file -
