@@ -65,20 +65,6 @@ def profile(request):
     })
 
 
-@login_required
-def start_project(request):
-    if request.method == 'POST':
-        form = ProjectForm(request.POST)
-        if form.is_valid():
-            form.instance.created_by = request.user
-            form.save()
-            return redirect(reverse('view_project', args=[form.instance.id]))
-    else:
-        form = ProjectForm()
-
-    return render(request, 'app/start_project.html', context={'form': form})
-
-
 def view_project(request, id):
     """ if
     1. This project is a draft and
@@ -102,6 +88,20 @@ def view_project(request, id):
             'project': project,
             'reward_tiers': project.reward_tiers.all(),
         })
+
+
+@login_required
+def start_project(request):
+    if request.method == 'POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            form.instance.created_by = request.user
+            form.save()
+            return redirect(reverse('view_project', args=[form.instance.id]))
+    else:
+        form = ProjectForm()
+
+    return render(request, 'app/start_project.html', context={'form': form})
 
 
 @login_required
