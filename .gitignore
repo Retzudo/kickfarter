@@ -1,5 +1,4 @@
 env/
-static/
 *.pyc
 __pycache__
 *.sqlite3
