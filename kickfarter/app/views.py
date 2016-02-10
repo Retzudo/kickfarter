@@ -70,3 +70,7 @@ def start_project(request):
         form = ProjectForm()
 
     return render(request, 'app/start_project.html', context={'form': form})
+
+
+def error(request):
+    return render(request, 'app/404.html')

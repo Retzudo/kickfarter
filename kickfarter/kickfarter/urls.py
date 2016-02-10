@@ -20,3 +20,6 @@ urlpatterns = [
     url(r'^', include('app.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+handler404 = 'app.views.error'
+
