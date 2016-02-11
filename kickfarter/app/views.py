@@ -1,9 +1,10 @@
 from app.forms import UserCreationForm, LoginForm, ProjectForm
-from app.models import Project
+from app.models import Project, RewardTier
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 
@@ -95,16 +96,20 @@ def view_project(request, id):
 
 @login_required
 def start_project(request):
+    RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=1)
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES)
-        if form.is_valid():
+        reward_tier_formset = RewardTierFormSet(request.POST)
+        if form.is_valid() and reward_tier_formset.is_valid():
             form.instance.created_by = request.user
             form.save()
+            reward_tier_formset.save()
             return redirect(reverse('view_project', args=[form.instance.id]))
     else:
         form = ProjectForm()
+        reward_tier_formset = RewardTierFormSet()
 
-    return render(request, 'app/project/start.html', context={'form': form})
+    return render(request, 'app/project/start.html', context={'form': form, 'reward_tier_formset': reward_tier_formset})
 
 
 @login_required
@@ -112,17 +117,21 @@ def edit_project(request, id):
     project = get_object_or_404(Project, pk=id)
 
     if request.user == project.created_by or request.user.is_superuser:
+        RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=1)
         if request.method == 'POST':
             form = ProjectForm(request.POST, files=request.FILES, instance=project)
-            if form.is_valid():
+            reward_tier_formset = RewardTierFormSet(request.POST, instance=project)
+            if form.is_valid() and reward_tier_formset.is_valid():
                 publish = request.POST.get('publish', None)
                 if project.status == Project.STATUS_DRAFT and publish == '1':
                     form.instance.publish()
                 form.save()
+                reward_tier_formset.save()
         else:
             form = ProjectForm(instance=project)
+            reward_tier_formset = RewardTierFormSet(instance=project)
 
-        return render(request, 'app/project/edit.html', context={'form': form})
+        return render(request, 'app/project/edit.html', context={'form': form, 'reward_tier_formset': reward_tier_formset})
     else:
         raise PermissionDenied()
 

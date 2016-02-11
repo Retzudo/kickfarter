@@ -34,7 +34,7 @@
                 <h4>Rewards</h4>
                 {% for reward_tier in reward_tiers %}
                     <div class="reward-tier">
-                        <h6>{{ reward_tier.minimum_amount }}</h6>
+                        <h6>{{ project.get_currency_display }}{{ reward_tier.minimum_amount }}</h6>
                         <p>
                             {{ reward_tier.description }}
                         </p>

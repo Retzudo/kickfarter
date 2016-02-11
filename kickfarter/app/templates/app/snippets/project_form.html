@@ -6,4 +6,59 @@
 {% bootstrap_field form.goal %}
 {% bootstrap_field form.cover_image %}
 
-{% csrf_token %}
+<h2>Reward tiers</h2>
+{# Manual rendering because we need extra buttons and some JavaScript #}
+
+{#{% bootstrap_formset reward_tier_formset %}#}
+{{ reward_tier_formset.management_form }}
+<div class="reward-tiers">
+    {% for reward_tier_form in reward_tier_formset %}
+        <div class="reward-tier">
+            {% bootstrap_form reward_tier_form %}
+        </div>
+    {% endfor %}
+</div>
+<button class="btn btn-default" id="add-another" type="button">+ Add antoher</button>
+
+<script>
+    (function () {
+        'use strict';
+
+        var $totalFormsInput = $('#id_reward_tiers-TOTAL_FORMS');
+        var $tiers = $('.reward-tier');
+        var $templateTier = $tiers.last();
+        var $addButton = $('#add-another');
+
+        $addButton.click(function (event) {
+            event.preventDefault();
+            addTier();
+        });
+
+        function addTier() {
+            var currentNumber = parseInt($totalFormsInput.val());
+            console.log(currentNumber);
+            $totalFormsInput.val(currentNumber + 1);
+
+            var $newTier = $templateTier.clone();
+            var $newInput = $newTier.find('input');
+            var $newTextarea = $newTier.find('textarea');
+            $newInput.val('');
+            $newTextarea.val('');
+
+            changeNumber($newInput, currentNumber, ['id', 'name']);
+            changeNumber($newInput.prev('label'), currentNumber, ['for']);
+            changeNumber($newTextarea, currentNumber, ['id', 'name']);
+            changeNumber($newTextarea.prev('label'), currentNumber, ['for']);
+
+            $newTier.appendTo($('.reward-tiers'));
+        }
+
+        function changeNumber($element, newNumber, attributes) {
+            attributes.forEach(function (attribute) {
+                var value = $element.attr(attribute);
+                value = value.replace(/reward_tiers-0/, 'reward_tiers-' + newNumber);
+                $element.attr(attribute, value);
+            });
+        }
+    })();
+</script>

@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ block.super }}
     {% if form.instance.is_draft %}
         <script>
             (function () {

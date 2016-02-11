@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="{% static 'app/css/main.css' %}">
     {% endblock %}
     <title>{% block title %}Kickfarter{% endblock %}</title>
+    <script src="{% static 'app/js/jquery-2.2.0.min.js' %}"></script>
 </head>
 <body>
     <nav class="navbar navbar-default navbar-static-top">
@@ -50,7 +51,6 @@
     {% block content %}
     {% endblock %}
     {% block scripts %}
-        <script src="{% static 'app/js/jquery-2.2.0.min.js' %}"></script>
         <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
     {% endblock %}
 </body>
