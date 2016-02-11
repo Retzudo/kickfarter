@@ -51,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
-    def pledge(self, amount, project, reward=None):
+    def pledge(self, amount, project, reward_tier=None):
         if project.created_by == self:
             raise BackingException('You can\'t back your own projects')
         if project.status != 0:
@@ -59,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
 
-        pledge = Pledge(project=project, user=self, amount=amount, chosen_reward_tier=reward)
+        pledge = Pledge(project=project, user=self, amount=amount, chosen_reward_tier=reward_tier)
         pledge.save()
         return pledge
 

@@ -1,12 +1,12 @@
 """
 Ignore Django's features and assume that the relations
-between classed are fine. Only check custom methods.
+between classes are fine. Only check custom methods.
 """
 from django.test import TestCase
 import os
 
 
-class Tests(TestCase):
+class UserTest(TestCase):
     def setUp(self):
         from app.models import User
         from django.core.files.uploadedfile import SimpleUploadedFile
@@ -27,11 +27,9 @@ class Tests(TestCase):
         self.project.save()
 
     def tearDown(self):
-        self.user.delete()
-        self.project.delete()
         os.remove(self.file.name)
 
-    def test_pleding(self):
+    def test_pledging(self):
         from app.exceptions import BackingException
 
         with self.assertRaises(BackingException) as e:
@@ -39,7 +37,7 @@ class Tests(TestCase):
             self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'active projects')
 
-        self.project.publish()
+        self.project.status = 0
 
         with self.assertRaises(BackingException) as e:
             # Pledging to their own project
@@ -51,10 +49,36 @@ class Tests(TestCase):
         self.assertEqual(self.project, pledge.project)
         self.assertEqual(self.user_two, pledge.user)
 
-        self.assertEqual(100, self.project.total_pledged_amount)
-        self.assertEqual(1, self.project.percentage_funded)
+        self.assertEqual(self.user_two.pledged_to.first(), self.project)
+        self.assertEqual(self.user_two.pledges.first(), pledge)
 
         with self.assertRaises(BackingException) as e:
             # Pleding again
             self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'already backed')
+
+
+class ProjectTest(TestCase):
+    def setUp(self):
+        from app.models import User
+
+        self.user = User(email='test@example.com')
+        self.user_two = User(email='test2@example.com')
+        self.user.save()
+        self.user_two.save()
+
+    def test_project(self):
+        from app.models import Project
+        project = Project(title='Test Project', description='Test Project', goal=100, created_by=self.user)
+        project.save()
+
+        self.assertNotEqual(0, project.status)
+        self.assertTrue(project.is_draft)
+        project.publish()
+        self.assertEqual(0, project.status)
+        self.assertFalse(project.is_draft)
+
+        self.user_two.pledge(1, project)
+
+        self.assertEqual(1, project.total_pledged_amount)
+        self.assertEqual(1, project.percentage_funded)
