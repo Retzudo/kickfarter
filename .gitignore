@@ -1,5 +1,6 @@
 /env/
 /static/
+/media/
 /.idea
 
 *.sqlite3

@@ -1,5 +1,7 @@
 import app.views
 from django.conf.urls import url
+from django.conf.urls.static import static
+from kickfarter import settings
 
 urlpatterns = [
     url(r'^$', app.views.index, name='index'),
@@ -12,3 +14,6 @@ urlpatterns = [
     url(r'^project/(?P<id>\d+)/edit$', app.views.edit_project, name='edit_project'),
     url(r'^project/(?P<id>\d+)$', app.views.view_project, name='view_project'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,6 +13,7 @@
     height: 235px;
     border-radius: 6px 6px 0 0;
     background-color: #EFEFEF;
+    overflow: hidden;
 }
 
 .project-card__cover-image {
