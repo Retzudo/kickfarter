@@ -74,11 +74,13 @@ def view_project(request, id):
     5. else 404
     """
     project = get_object_or_404(Project, pk=id)
+    num_backers = len(project.pledges.all())
 
     if project.is_draft:
         if request.user.is_authenticated() and (request.user == project.created_by or request.user.is_superuser):
             return render(request, 'app/project/view.html', context={
                 'project': project,
+                'num_backers': num_backers,
                 'reward_tiers': project.reward_tiers.all(),
             })
         else:
@@ -86,6 +88,7 @@ def view_project(request, id):
     else:
         return render(request, 'app/project/view.html', context={
             'project': project,
+            'num_backers': num_backers,
             'reward_tiers': project.reward_tiers.all(),
         })
 

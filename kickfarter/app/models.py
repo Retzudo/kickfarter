@@ -66,6 +66,10 @@ class Project(models.Model):
     STATUS_CANCELED = 3
     STATUS_DRAFT = 4
 
+    CURRENCY_USD = 0
+    CURRENCY_EUR = 1
+    CURRENCY_CAD = 2
+
     PROJECT_STATUS = [
         (STATUS_ACTIVE, 'ACTIVE'),
         (STATUS_SUCCESSFUL, 'SUCCESSFUL'),
@@ -74,12 +78,19 @@ class Project(models.Model):
         (STATUS_DRAFT, 'DRAFT'),
     ]
 
+    CURRENCIES = [
+        (CURRENCY_USD, '$'),
+        (CURRENCY_EUR, '€'),
+        (CURRENCY_CAD, 'CAD'),
+    ]
+
     title = models.CharField(max_length=255)
     description = models.TextField()
     goal = models.FloatField(validators=[MinValueValidator(1)])
     cover_image = models.ImageField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=PROJECT_STATUS, default=STATUS_DRAFT)
+    currency = models.IntegerField(choices=CURRENCIES, default=CURRENCY_USD)
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
 

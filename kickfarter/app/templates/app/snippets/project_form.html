@@ -1,6 +1,7 @@
+{% load widget_tweaks %}
 <div class="form-group{% if form.title.errors %} has-error{% endif %}">
     <label for="{{ form.title.name }}">Project title</label>
-    <input type="text" name="{{ form.title.name }}" class="form-control" value="{{ form.title.value }}" placeholder="Title" required>
+    {{ form.title|add_class:"form-control"|attr:"placeholder:Title"|attr:"required" }}
     {% if form.title.errors %}
         {% for error in form.title.errors %}
             <span class="help-block">{{ error|escape }}</span>
@@ -10,7 +11,7 @@
 
 <div class="form-group{% if form.description.errors %} has-error{% endif %}">
     <label for="{{ form.description.name }}">Project description</label>
-    <textarea name="{{ form.description.name }}" class="form-control" placeholder="Describe your project" required>{{ form.description.value }}</textarea>
+    {{ form.description|attr:"placeholder:Describe your project"|attr:"required"|add_class:"form-control" }}
     {% if form.description.errors %}
         {% for error in form.description.errors %}
             <span class="help-block">{{ error|escape }}</span>
@@ -20,9 +21,9 @@
 
 <div class="form-group{% if form.goal.errors %} has-error{% endif %}">
     <label for="{{ form.goal.name }}">How much money do you want to raise?</label>
-    <div class="input-group">
-        <span class="input-group-addon">$</span>
-        <input type="number" name="{{ form.goal.name }}" class="form-control" value="{{ form.goal.value }}" placeholder="10.00" min="1" required>
+    <div class="input-group" style="width: 100%;">
+        {{ form.currency|add_class:"form-control"|attr:"style:width: 10%" }}
+        {{ form.goal|add_class:"form-control"|attr:"required"|attr:"placeholder:10.00"|attr:"min:1"|attr:"style:width: 90%;" }}
     </div>
     {% if form.goal.errors %}
         {% for error in form.goal.errors %}
@@ -33,7 +34,9 @@
 
 <div class="form-group{% if form.cover_image.errors %} has-error{% endif %}">
     <label for="{{ form.cover_image.name }}">Cover image</label>
-    <input type="file" name="{{ form.cover_image.name }}" value="{{ form.cover_image.value }}" accept=".jpg,.png">
+    <div class="input-group">
+        {{ form.cover_image|attr:"accept:.jpg,.png" }}
+    </div>
     {% if form.cover_image.errors %}
         {% for error in form.cover_image.errors %}
             <span class="help-block">{{ error|escape }}</span>
