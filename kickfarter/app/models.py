@@ -48,7 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             raise BackingException('You can\'t back your own projects')
         if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
-        if project.status != Project.STATUS_DRAFT:
+        if project.status != Project.STATUS_ACTIVE:
             raise BackingException('You can only back active projects')
 
         pledge = Pledge(project=project, user=self, amount=amount, chosen_reward_tier=reward_tier)

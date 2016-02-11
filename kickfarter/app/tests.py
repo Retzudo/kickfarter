@@ -31,13 +31,14 @@ class UserTest(TestCase):
 
     def test_pledging(self):
         from app.exceptions import BackingException
+        from app.models import Project
 
         with self.assertRaises(BackingException) as e:
             # Pledging on a project that is not active
             self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'active projects')
 
-        self.project.status = 0
+        self.project.status = Project.STATUS_ACTIVE
 
         with self.assertRaises(BackingException) as e:
             # Pledging to their own project
@@ -72,10 +73,10 @@ class ProjectTest(TestCase):
         project = Project(title='Test Project', description='Test Project', goal=100, created_by=self.user)
         project.save()
 
-        self.assertNotEqual(0, project.status)
+        self.assertNotEqual(Project.STATUS_ACTIVE, project.status)
         self.assertTrue(project.is_draft)
         project.publish()
-        self.assertEqual(0, project.status)
+        self.assertEqual(Project.STATUS_ACTIVE, project.status)
         self.assertFalse(project.is_draft)
 
         self.user_two.pledge(1, project)
