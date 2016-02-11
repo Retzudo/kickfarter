@@ -93,7 +93,7 @@ def view_project(request, id):
 @login_required
 def start_project(request):
     if request.method == 'POST':
-        form = ProjectForm(request.POST)
+        form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             form.instance.created_by = request.user
             form.save()
@@ -110,7 +110,7 @@ def edit_project(request, id):
 
     if request.user == project.created_by or request.user.is_superuser:
         if request.method == 'POST':
-            form = ProjectForm(request.POST, instance=project)
+            form = ProjectForm(request.POST, files=request.FILES, instance=project)
             if form.is_valid():
                 publish = request.POST.get('publish', None)
                 if project.status != 0 and publish == '1':
