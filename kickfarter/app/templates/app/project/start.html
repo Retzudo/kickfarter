@@ -1,6 +1,7 @@
 {% extends 'app/master.html' %}
 
 {% block content %}
+    {% load bootstrap3 %}
     <div class="container">
         <h1>Start a shitty project</h1>
 
@@ -9,7 +10,9 @@
 
             {% csrf_token %}
 
-            <button type="submit" class="btn btn-default btn-lg">Start your project</button>
+            {% buttons %}
+                <button type="submit" class="btn btn-default btn-lg">Start your project</button>
+            {% endbuttons %}
         </form>
     </div>
 {% endblock %}

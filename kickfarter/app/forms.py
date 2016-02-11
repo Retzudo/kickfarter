@@ -17,7 +17,7 @@ class UserCreationForm(forms.ModelForm):
     )
 
     password2 = forms.CharField(
-            label=_("Password confirmation"),
+            label=_("Repeat password"),
             widget=forms.PasswordInput,
             help_text=_("Enter the same password as before, for verification.")
     )
@@ -46,11 +46,28 @@ class UserCreationForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(
+        label=_('Email address'),
+        widget=forms.TextInput(attrs={'placeholder': _('user@example.com')})
+    )
+    password = forms.CharField(
+        label=_('Password'),
+        widget=forms.PasswordInput(attrs={'placeholder': _('Password')}),
+    )
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        exclude = ['status', 'created_on', 'created_by', 'pledges']
+        fields = ['title', 'description', 'currency', 'goal', 'cover_image']
+
+        labels = {
+            'title': _('Project title'),
+            'description': _('Project description'),
+        }
+
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': _('My shitty project')}),
+            'description': forms.Textarea(attrs={'placeholder': _('Describe your project')}),
+            'goal': forms.NumberInput(attrs={'placeholder': _('10.00')}),
+        }

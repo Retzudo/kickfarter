@@ -1,32 +1,18 @@
 {% extends 'app/master.html' %}
 
 {% block content %}
+    {% load bootstrap3 %}
     <div class="container">
         <h1>Log in</h1>
 
         <form action="{% url 'login' %}" method="post">
-            <div class="form-group{% if form.email.errors %} has-error{% endif %}">
-                <label for="{{ form.email.name }}">Email address</label>
-                <input type="email" name="{{ form.email.name }}" class="form-control" placeholder="Email" required>
-                {% if form.email.errors %}
-                    {% for error in form.email.errors %}
-                        <span class="help-block">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+            {% bootstrap_form form %}
 
-            <div class="form-group{% if form.password.errors %} has-error{% endif %}">
-                <label for="{{ form.password.name }}">Password</label>
-                <input type="password" name="{{ form.password.name }}" class="form-control" placeholder="Password" required>
-                {% if form.password.errors %}
-                    {% for error in form.password.errors %}
-                        <span class="help-block">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-default">Log in</button>
             {% csrf_token %}
+
+            {% buttons %}
+                <button type="submit" class="btn btn-default">Log in</button>
+            {% endbuttons %}
         </form>
     </div>
 {% endblock %}
