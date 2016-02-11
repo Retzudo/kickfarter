@@ -53,7 +53,7 @@ class UserTest(TestCase):
         self.assertEqual(self.user_two.pledges.first(), pledge)
 
         with self.assertRaises(BackingException) as e:
-            # Pleding again
+            # Pledging again
             self.user.pledge(100, self.project)
             self.assertContains(e.msg, 'already backed')
 
