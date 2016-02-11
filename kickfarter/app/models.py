@@ -4,14 +4,6 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import MinValueValidator
 from django.db import models
 
-PROJECT_STATUS = [
-    (0, 'ACTIVE'),
-    (1, 'SUCCESSFUL'),
-    (2, 'NOT_FUNDED'),
-    (3, 'CANCELED'),
-    (4, 'DRAFT'),
-]
-
 
 class UserManager(BaseUserManager):
     """Boilerplate code because Django..."""
@@ -56,7 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             raise BackingException('You can\'t back your own projects')
         if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
-        if project.status != 0:
+        if project.status != Project.STATUS_DRAFT:
             raise BackingException('You can only back active projects')
 
         pledge = Pledge(project=project, user=self, amount=amount, chosen_reward_tier=reward_tier)
@@ -68,12 +60,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Project(models.Model):
+    STATUS_ACTIVE = 0
+    STATUS_SUCCESSFUL = 1
+    STATUS_NOT_FUNDED = 2
+    STATUS_CANCELED = 3
+    STATUS_DRAFT = 4
+
+    PROJECT_STATUS = [
+        (STATUS_ACTIVE, 'ACTIVE'),
+        (STATUS_SUCCESSFUL, 'SUCCESSFUL'),
+        (STATUS_NOT_FUNDED, 'NOT_FUNDED'),
+        (STATUS_CANCELED, 'CANCELED'),
+        (STATUS_DRAFT, 'DRAFT'),
+    ]
+
     title = models.CharField(max_length=255)
     description = models.TextField()
     goal = models.FloatField(validators=[MinValueValidator(1)])
     cover_image = models.ImageField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(choices=PROJECT_STATUS, default=4)
+    status = models.IntegerField(choices=PROJECT_STATUS, default=STATUS_DRAFT)
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
 
@@ -87,10 +93,10 @@ class Project(models.Model):
 
     @property
     def is_draft(self):
-        return self.status == 4
+        return self.status == Project.STATUS_DRAFT
 
     def publish(self):
-        self.status = 0
+        self.status = Project.STATUS_ACTIVE
 
     def __str__(self):
         return self.title

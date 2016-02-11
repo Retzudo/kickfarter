@@ -8,12 +8,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 def index(request):
-    projects = Project.objects.filter(status=0)
+    projects = Project.objects.filter(status=Project.STATUS_ACTIVE)
     return render(request, 'app/index.html', context={'projects': projects})
 
 
 def discover(request):
-    projects = Project.objects.filter(status=0)
+    projects = Project.objects.filter(status=Project.STATUS_ACTIVE)
     return render(request, 'app/discover.html', context={'projects': projects})
 
 
@@ -113,8 +113,8 @@ def edit_project(request, id):
             form = ProjectForm(request.POST, files=request.FILES, instance=project)
             if form.is_valid():
                 publish = request.POST.get('publish', None)
-                if project.status != 0 and publish == '1':
-                    form.instance.status = 0
+                if project.status == Project.STATUS_DRAFT and publish == '1':
+                    form.instance.publish()
                 form.save()
         else:
             form = ProjectForm(instance=project)
