@@ -125,4 +125,4 @@ def edit_project(request, id):
 
 
 def error(request):
-    return render(request, 'app/404.html')
+    return render(request, 'app/error/404.html')
