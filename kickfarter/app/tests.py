@@ -27,7 +27,8 @@ class UserTest(TestCase):
         self.project.save()
 
     def tearDown(self):
-        os.remove(self.file.name)
+        from kickfarter import settings
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.file.name))
 
     def test_pledging(self):
         from app.exceptions import BackingException
