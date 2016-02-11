@@ -26,11 +26,11 @@ def signup(request):
             form.save()
             user = authenticate(email=request.POST['email'], password=request.POST['password1'])
             login(request, user)
-            return render(request, 'app/signup_success.html')
+            return render(request, 'app/user/signup_success.html')
     else:
         form = UserCreationForm()
 
-    return render(request, 'app/signup.html', context={'form': form})
+    return render(request, 'app/user/signup.html', context={'form': form})
 
 
 def login_view(request):
@@ -47,7 +47,7 @@ def login_view(request):
     else:
         form = LoginForm()
 
-    return render(request, 'app/login.html', context={'form': form})
+    return render(request, 'app/user/login.html', context={'form': form})
 
 
 def logout_view(request):
@@ -59,7 +59,7 @@ def logout_view(request):
 def profile(request):
     projects_created = request.user.projects_created.all()
     pledges = request.user.pledges.all()
-    return render(request, 'app/profile.html', context={
+    return render(request, 'app/user/profile.html', context={
         'projects_created': projects_created,
         'pledges': pledges,
     })
@@ -77,14 +77,14 @@ def view_project(request, id):
 
     if project.is_draft:
         if request.user.is_authenticated() and (request.user == project.created_by or request.user.is_superuser):
-            return render(request, 'app/view_project.html', context={
+            return render(request, 'app/project/view.html', context={
                 'project': project,
                 'reward_tiers': project.reward_tiers.all(),
             })
         else:
             raise PermissionDenied()
     else:
-        return render(request, 'app/view_project.html', context={
+        return render(request, 'app/project/view.html', context={
             'project': project,
             'reward_tiers': project.reward_tiers.all(),
         })
@@ -101,7 +101,7 @@ def start_project(request):
     else:
         form = ProjectForm()
 
-    return render(request, 'app/start_project.html', context={'form': form})
+    return render(request, 'app/project/start.html', context={'form': form})
 
 
 @login_required
@@ -119,7 +119,7 @@ def edit_project(request, id):
         else:
             form = ProjectForm(instance=project)
 
-        return render(request, 'app/edit_project.html', context={'form': form})
+        return render(request, 'app/project/edit.html', context={'form': form})
     else:
         raise PermissionDenied()
 

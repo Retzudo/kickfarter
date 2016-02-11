@@ -54,10 +54,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def pledge(self, amount, project, reward_tier=None):
         if project.created_by == self:
             raise BackingException('You can\'t back your own projects')
-        if project.status != 0:
-            raise BackingException('You can only back active projects')
         if project in self.pledged_to.all():
             raise BackingException('You have already backed this project')
+        if project.status != 0:
+            raise BackingException('You can only back active projects')
 
         pledge = Pledge(project=project, user=self, amount=amount, chosen_reward_tier=reward_tier)
         pledge.save()
