@@ -1,6 +1,6 @@
 """
 Ignore Django's features and assume that the relations
-between classes are fine. Only check custom methods.
+between classes basically are fine. Only check custom methods.
 """
 from django.test import TestCase
 import os
