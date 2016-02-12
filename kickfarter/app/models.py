@@ -117,17 +117,15 @@ class Project(models.Model):
     def publish(self):
         self.status = Project.STATUS_ACTIVE
 
-    def time_remaining(self, relative_to=None):
+    def timedelta_remaining(self, relative_to=None):
+        """
+        :param relative_to: datetime.datetime
+        :return: datetime.timedelta
+        """
         if not relative_to:
             relative_to = datetime.datetime.now(datetime.timezone.utc)
-        if relative_to >= self.finished_on:
-            return 0, 'finished'
 
-        timedelta_remaining = self.finished_on - relative_to
-        if timedelta_remaining.days > 0:
-            return timedelta_remaining.days, 'days'
-        else:
-            return int(timedelta_remaining.seconds / 60 / 60), 'hours'
+        return self.finished_on - relative_to
 
     def __str__(self):
         return self.title

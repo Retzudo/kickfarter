@@ -92,20 +92,20 @@ class ProjectTest(TestCase):
         project.save()
 
         # 59 days because a tiny tiny amount of time has already passed between save() and this test
-        self.assertEqual((59, 'days'), project.time_remaining())
+        self.assertEqual(59, project.timedelta_remaining().days)
 
         # Calculate one day remaining
         one_day_before = project.finished_on - datetime.timedelta(days=1)
-        self.assertEqual((1, 'days'), project.time_remaining(relative_to=one_day_before))
+        self.assertEqual(1, project.timedelta_remaining(relative_to=one_day_before).days)
 
         # Calculate two hours remaining
         two_hours_before = project.finished_on - datetime.timedelta(hours=2)
-        self.assertEqual((2, 'hours'), project.time_remaining(relative_to=two_hours_before))
+        self.assertEqual(2, project.timedelta_remaining(relative_to=two_hours_before).total_seconds() // 60 // 60)
 
         # Calculate less than an hour remaining
         less_than_an_hour_before = project.finished_on - datetime.timedelta(minutes=30)
-        self.assertEqual((0, 'hours'), project.time_remaining(relative_to=less_than_an_hour_before))
+        self.assertEqual(0, project.timedelta_remaining(relative_to=less_than_an_hour_before).total_seconds() // 60 // 60)
 
         # Project overdue
         after = project.finished_on + datetime.timedelta(days=1)
-        self.assertEqual((0, 'finished'), project.time_remaining(relative_to=after))
+        self.assertGreaterEqual(0, project.timedelta_remaining(relative_to=after).total_seconds())
