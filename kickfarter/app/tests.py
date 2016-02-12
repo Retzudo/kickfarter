@@ -84,3 +84,28 @@ class ProjectTest(TestCase):
 
         self.assertEqual(1, project.total_pledged_amount)
         self.assertEqual(1, project.percentage_funded)
+
+    def test_duration(self):
+        import datetime
+        from app.models import Project
+        project = Project(title='Test Project', description='Test Project', goal=100, created_by=self.user)
+        project.save()
+
+        # 59 days because a tiny tiny amount of time has already passed between save() and this test
+        self.assertEqual((59, 'days'), project.time_remaining())
+
+        # Calculate one day remaining
+        one_day_before = project.finished_on - datetime.timedelta(days=1)
+        self.assertEqual((1, 'days'), project.time_remaining(relative_to=one_day_before))
+
+        # Calculate two hours remaining
+        two_hours_before = project.finished_on - datetime.timedelta(hours=2)
+        self.assertEqual((2, 'hours'), project.time_remaining(relative_to=two_hours_before))
+
+        # Calculate less than an hour remaining
+        two_hours_before = project.finished_on - datetime.timedelta(minutes=30)
+        self.assertEqual((0, 'hours'), project.time_remaining(relative_to=two_hours_before))
+
+        # Project overdue
+        after = project.finished_on + datetime.timedelta(days=1)
+        self.assertEqual((0, 'finished'), project.time_remaining(relative_to=after))

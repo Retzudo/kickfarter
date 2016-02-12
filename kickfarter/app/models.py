@@ -1,3 +1,5 @@
+import datetime
+
 from app.exceptions import BackingException
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -84,6 +86,8 @@ class Project(models.Model):
         (CURRENCY_CAD, 'CAD'),
     ]
 
+    DEFAULT_DURATION = 60  # in days
+
     title = models.CharField(max_length=255)
     description = models.TextField()
     goal = models.FloatField(validators=[MinValueValidator(1)])
@@ -106,8 +110,24 @@ class Project(models.Model):
     def is_draft(self):
         return self.status == Project.STATUS_DRAFT
 
+    @property
+    def finished_on(self):
+        return self.created_on + datetime.timedelta(days=self.DEFAULT_DURATION)
+
     def publish(self):
         self.status = Project.STATUS_ACTIVE
+
+    def time_remaining(self, relative_to=None):
+        if not relative_to:
+            relative_to = datetime.datetime.now(datetime.timezone.utc)
+        if relative_to >= self.finished_on:
+            return 0, 'finished'
+
+        timedelta_remaining = self.finished_on - relative_to
+        if timedelta_remaining.days > 0:
+            return timedelta_remaining.days, 'days'
+        else:
+            return int(timedelta_remaining.seconds / 60 / 60), 'hours'
 
     def __str__(self):
         return self.title
