@@ -92,11 +92,23 @@ class Project(models.Model):
     description = models.TextField()
     goal = models.FloatField(validators=[MinValueValidator(1)])
     cover_image = models.ImageField(null=True, blank=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    published_on = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(choices=PROJECT_STATUS, default=STATUS_DRAFT)
     currency = models.IntegerField(choices=CURRENCIES, default=CURRENCY_USD)
     created_by = models.ForeignKey('User', related_name='projects_created', on_delete=models.CASCADE)
     pledges = models.ManyToManyField('User', through='Pledge', related_name='pledged_to')
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        """
+        Every time a project object is loaded from database, update its status.
+        This is an expensive way of doing the status updates but considering
+        this is a hobby project it shouldn't matter too much. I just wanted to avoid cron jobs and
+        other convoluted asynchronous systems.
+        """
+        instance = super().from_db(db, field_names, values)
+        instance.update_status()
+        return instance
 
     @property
     def total_pledged_amount(self):
@@ -112,10 +124,14 @@ class Project(models.Model):
 
     @property
     def finished_on(self):
-        return self.created_on + datetime.timedelta(days=self.DEFAULT_DURATION)
+        return self.published_on + datetime.timedelta(days=self.DEFAULT_DURATION)
 
     def publish(self):
         self.status = Project.STATUS_ACTIVE
+        self.published_on = datetime.datetime.now(datetime.timezone.utc)
+
+    def cancel(self):
+        self.status = Project.STATUS_CANCELED
 
     def timedelta_remaining(self, relative_to=None):
         """
@@ -126,6 +142,14 @@ class Project(models.Model):
             relative_to = datetime.datetime.now(datetime.timezone.utc)
 
         return self.finished_on - relative_to
+
+    def update_status(self):
+        # If the project is active and there's no time remaining
+        if self.status == self.STATUS_ACTIVE and self.timedelta_remaining().total_seconds() <= 0:
+            if self.total_pledged_amount >= self.goal:
+                self.status = self.STATUS_SUCCESSFUL
+            else:
+                self.status = self.STATUS_NOT_FUNDED
 
     def __str__(self):
         return self.title

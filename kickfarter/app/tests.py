@@ -89,9 +89,10 @@ class ProjectTest(TestCase):
         import datetime
         from app.models import Project
         project = Project(title='Test Project', description='Test Project', goal=100, created_by=self.user)
+        project.publish()
         project.save()
 
-        # 59 days because a tiny tiny amount of time has already passed between save() and this test
+        # 59 days because a tiny tiny amount of time has already passed between publish() and this test
         self.assertEqual(59, project.timedelta_remaining().days)
 
         # Calculate one day remaining
@@ -109,3 +110,14 @@ class ProjectTest(TestCase):
         # Project overdue
         after = project.finished_on + datetime.timedelta(days=1)
         self.assertGreaterEqual(0, project.timedelta_remaining(relative_to=after).total_seconds())
+
+    def test_status_update(self):
+        from app.models import Project
+        project = Project(title='Test Status Project', description='Test Project', goal=100, created_by=self.user)
+        import datetime
+        project.publish()
+        project.published_on = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=Project.DEFAULT_DURATION+1)
+        project.save()
+
+        project = Project.objects.first()
+        self.assertEqual(Project.STATUS_NOT_FUNDED, project.status)
