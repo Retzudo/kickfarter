@@ -103,8 +103,8 @@ class ProjectTest(TestCase):
         self.assertEqual((2, 'hours'), project.time_remaining(relative_to=two_hours_before))
 
         # Calculate less than an hour remaining
-        two_hours_before = project.finished_on - datetime.timedelta(minutes=30)
-        self.assertEqual((0, 'hours'), project.time_remaining(relative_to=two_hours_before))
+        less_than_an_hour_before = project.finished_on - datetime.timedelta(minutes=30)
+        self.assertEqual((0, 'hours'), project.time_remaining(relative_to=less_than_an_hour_before))
 
         # Project overdue
         after = project.finished_on + datetime.timedelta(days=1)
