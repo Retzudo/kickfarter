@@ -67,12 +67,10 @@ def profile(request):
 
 
 def view_project(request, id):
-    """ if
-    1. This project is a draft and
-    2. a user is logged in and
-    3. the project's owner is the logged in user (or a superuser)
-    4. then display the project
-    5. else 404
+    """ Show the project if
+    1. it is not a draft
+    2. it is a draft and the logged in user is the owner
+    else 404
     """
     project = get_object_or_404(Project, pk=id)
     num_backers = len(project.pledges.all())
@@ -99,12 +97,13 @@ def start_project(request):
     RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=1)
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES)
-        reward_tier_formset = RewardTierFormSet(request.POST)
-        if form.is_valid() and reward_tier_formset.is_valid():
+        if form.is_valid():
             form.instance.created_by = request.user
-            form.save()
-            reward_tier_formset.save()
-            return redirect(reverse('view_project', args=[form.instance.id]))
+            project = form.save()
+            reward_tier_formset = RewardTierFormSet(request.POST, request.FILES, instance=project)
+            if reward_tier_formset.is_valid():
+                reward_tier_formset.save()
+                return redirect(reverse('view_project', args=[form.instance.id]))
     else:
         form = ProjectForm()
         reward_tier_formset = RewardTierFormSet()
@@ -117,7 +116,7 @@ def edit_project(request, id):
     project = get_object_or_404(Project, pk=id)
 
     if request.user == project.created_by or request.user.is_superuser:
-        RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=1)
+        RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=0)
         if request.method == 'POST':
             form = ProjectForm(request.POST, files=request.FILES, instance=project)
             reward_tier_formset = RewardTierFormSet(request.POST, instance=project)

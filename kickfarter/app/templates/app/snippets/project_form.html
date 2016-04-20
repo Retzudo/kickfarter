@@ -36,19 +36,29 @@
 
         function addTier() {
             var currentNumber = parseInt($totalFormsInput.val());
-            console.log(currentNumber);
             $totalFormsInput.val(currentNumber + 1);
 
             var $newTier = $templateTier.clone();
-            var $newInput = $newTier.find('input');
+
+            var $newInput = $newTier.find('input[type=number]');
             var $newTextarea = $newTier.find('textarea');
-            $newInput.val('');
-            $newTextarea.val('');
+            var $newCheckbox = $newTier.find('input[type=checkbox]');
+            var $newHidden = $newTier.find('input[type=hidden]:first');
+            $newInput.val(null);
+            $newCheckbox.val(null);
+            $newTextarea.val(null);
+            $newHidden.val(null);
 
             changeNumber($newInput, currentNumber, ['id', 'name']);
             changeNumber($newInput.prev('label'), currentNumber, ['for']);
+
+            changeNumber($newCheckbox, currentNumber, ['id', 'name']);
+            changeNumber($newCheckbox.parent('label'), currentNumber, ['for']);
+
             changeNumber($newTextarea, currentNumber, ['id', 'name']);
             changeNumber($newTextarea.prev('label'), currentNumber, ['for']);
+
+            changeNumber($newHidden, currentNumber, ['id', 'name']);
 
             $newTier.appendTo($('.reward-tiers'));
         }
@@ -60,5 +70,5 @@
                 $element.attr(attribute, value);
             });
         }
-    })();
+    }());
 </script>
