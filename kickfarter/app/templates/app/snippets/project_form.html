@@ -18,57 +18,59 @@
         </div>
     {% endfor %}
 </div>
-<button class="btn btn-default" id="add-another" type="button">+ Add antoher</button>
+{% if project.is_draft %}
+    <button class="btn btn-default" id="add-another" type="button">+ Add antoher</button>
 
-<script>
-    (function () {
-        'use strict';
+    <script>
+        (function () {
+            'use strict';
 
-        var $totalFormsInput = $('#id_reward_tiers-TOTAL_FORMS');
-        var $tiers = $('.reward-tier');
-        var $templateTier = $tiers.last();
-        var $addButton = $('#add-another');
+            var $totalFormsInput = $('#id_reward_tiers-TOTAL_FORMS');
+            var $tiers = $('.reward-tier');
+            var $templateTier = $tiers.last();
+            var $addButton = $('#add-another');
 
-        $addButton.click(function (event) {
-            event.preventDefault();
-            addTier();
-        });
-
-        function addTier() {
-            var currentNumber = parseInt($totalFormsInput.val());
-            $totalFormsInput.val(currentNumber + 1);
-
-            var $newTier = $templateTier.clone();
-
-            var $newInput = $newTier.find('input[type=number]');
-            var $newTextarea = $newTier.find('textarea');
-            var $newCheckbox = $newTier.find('input[type=checkbox]');
-            var $newHidden = $newTier.find('input[type=hidden]:first');
-            $newInput.val(null);
-            $newCheckbox.val(null);
-            $newTextarea.val(null);
-            $newHidden.val(null);
-
-            changeNumber($newInput, currentNumber, ['id', 'name']);
-            changeNumber($newInput.prev('label'), currentNumber, ['for']);
-
-            changeNumber($newCheckbox, currentNumber, ['id', 'name']);
-            changeNumber($newCheckbox.parent('label'), currentNumber, ['for']);
-
-            changeNumber($newTextarea, currentNumber, ['id', 'name']);
-            changeNumber($newTextarea.prev('label'), currentNumber, ['for']);
-
-            changeNumber($newHidden, currentNumber, ['id', 'name']);
-
-            $newTier.appendTo($('.reward-tiers'));
-        }
-
-        function changeNumber($element, newNumber, attributes) {
-            attributes.forEach(function (attribute) {
-                var value = $element.attr(attribute);
-                value = value.replace(/reward_tiers-0/, 'reward_tiers-' + newNumber);
-                $element.attr(attribute, value);
+            $addButton.click(function (event) {
+                event.preventDefault();
+                addTier();
             });
-        }
-    }());
-</script>
+
+            function addTier() {
+                var currentNumber = parseInt($totalFormsInput.val());
+                $totalFormsInput.val(currentNumber + 1);
+
+                var $newTier = $templateTier.clone();
+
+                var $newInput = $newTier.find('input[type=number]');
+                var $newTextarea = $newTier.find('textarea');
+                var $newCheckbox = $newTier.find('input[type=checkbox]');
+                var $newHidden = $newTier.find('input[type=hidden]:first');
+                $newInput.val(null);
+                $newCheckbox.val(null);
+                $newTextarea.val(null);
+                $newHidden.val(null);
+
+                changeNumber($newInput, currentNumber, ['id', 'name']);
+                changeNumber($newInput.prev('label'), currentNumber, ['for']);
+
+                changeNumber($newCheckbox, currentNumber, ['id', 'name']);
+                changeNumber($newCheckbox.parent('label'), currentNumber, ['for']);
+
+                changeNumber($newTextarea, currentNumber, ['id', 'name']);
+                changeNumber($newTextarea.prev('label'), currentNumber, ['for']);
+
+                changeNumber($newHidden, currentNumber, ['id', 'name']);
+
+                $newTier.appendTo($('.reward-tiers'));
+            }
+
+            function changeNumber($element, newNumber, attributes) {
+                attributes.forEach(function (attribute) {
+                    var value = $element.attr(attribute);
+                    value = value.replace(/reward_tiers-0/, 'reward_tiers-' + newNumber);
+                    $element.attr(attribute, value);
+                });
+            }
+        }());
+    </script>
+{% endif %}

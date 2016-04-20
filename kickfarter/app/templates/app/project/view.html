@@ -3,6 +3,13 @@
 {% block content %}
     {% load l10n %}
     <div class="container">
+        {% if project.is_draft %}
+            <div class="alert alert-warning">
+                <strong>This project is a draft.</strong>
+                You are viewing a project that has not been published yet. You can publish the project
+                <a href="{% url 'edit_project' project.id %}">here</a>.
+            </div>
+        {% endif %}
         <header class="row header">
             <h3>{{ project.title }}</h3>
             <h5>by {{ project.created_by }}</h5>

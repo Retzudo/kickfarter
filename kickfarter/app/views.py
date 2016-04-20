@@ -94,7 +94,12 @@ def view_project(request, id):
 
 @login_required
 def start_project(request):
-    RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=1)
+    RewardTierFormSet = inlineformset_factory(
+        parent_model=Project,
+        model=RewardTier,
+        fields=('minimum_amount', 'description'),
+        extra=1,
+    )
     if request.method == 'POST':
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
@@ -116,7 +121,13 @@ def edit_project(request, id):
     project = get_object_or_404(Project, pk=id)
 
     if request.user == project.created_by or request.user.is_superuser:
-        RewardTierFormSet = inlineformset_factory(Project, RewardTier, fields=('minimum_amount', 'description'), extra=0)
+        RewardTierFormSet = inlineformset_factory(
+            parent_model=Project,
+            model=RewardTier,
+            fields=('minimum_amount', 'description'),
+            extra=0,
+            can_delete=project.is_draft,
+        )
         if request.method == 'POST':
             form = ProjectForm(request.POST, files=request.FILES, instance=project)
             reward_tier_formset = RewardTierFormSet(request.POST, instance=project)
@@ -130,7 +141,11 @@ def edit_project(request, id):
             form = ProjectForm(instance=project)
             reward_tier_formset = RewardTierFormSet(instance=project)
 
-        return render(request, 'app/project/edit.html', context={'form': form, 'reward_tier_formset': reward_tier_formset})
+        return render(request, 'app/project/edit.html', context={
+            'form': form,
+            'reward_tier_formset': reward_tier_formset,
+            'project': project,
+        })
     else:
         raise PermissionDenied()
 
